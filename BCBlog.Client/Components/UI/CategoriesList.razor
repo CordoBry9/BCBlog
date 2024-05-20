@@ -1,0 +1,99 @@
+﻿@using BCBlog.Client.Helpers
+@if (isEditing == false)
+{
+    <div class="fs-4 mt-2 d-flex justify-content-center">
+        <a class="me-3 btn btn-primary justify-content-end" role="button" @onclick="() => isEditing = true">
+            <i class="ai-pencil"></i> Edit
+        </a>
+        <a class="me-3 btn btn-danger justify-content-end" role="button" @onclick="() => isDeleting = true">
+            <i class="ai-trash"></i> Delete
+        </a>
+    </div>
+}
+else
+{
+    <EditForm Model="Category" OnValidSubmit="UpdateCategory">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label for="categoryName">Name</label>
+            <InputText id="categoryName" class="form-control" @bind-Value="Category.Name" />
+            <ValidationMessage For="() => Category.Name" />
+        </div>
+        <div class="form-group">
+            <label for="categoryDescription">Description</label>
+            <InputTextArea id="categoryDescription" class="form-control" @bind-Value="Category.Description" />
+            <ValidationMessage For="() => Category.Description" />
+        </div>
+        <div class="form-group">
+            <label for="categoryImage">Image</label>
+            <InputFile OnChange="OnFileChange" class="form-control" />
+            <span class="text-danger">@imageError</span>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Save</button>
+        <button type="button" class="btn btn-secondary mt-2" @onclick="() => isEditing = false">Cancel</button>
+    </EditForm>
+}
+
+@if (isDeleting == true)
+{
+    <div class="text-danger mt-1">Are you sure you want to delete the category?</div>
+    <button class="btn btn-sm btn-danger mt-2" @onclick="DeleteCategory">Delete</button>
+    <button class="btn btn-sm btn-secondary mt-2" @onclick="() => isDeleting = false">Cancel</button>
+}
+
+@code {
+    private bool isDeleting = false;
+    private bool isEditing = false;
+    private string? imageError;
+
+    [Parameter, EditorRequired]
+    public CategoryDTO? Category { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> DeleteTheCategory { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<CategoryDTO> UpdateTheCategory { get; set; }
+
+    private async Task UpdateCategory()
+    {
+        if (Category != null)
+        {
+            await UpdateTheCategory.InvokeAsync(Category);
+            isEditing = false;
+        }
+    }
+
+    private async Task DeleteCategory()
+    {
+        if (Category != null)
+        {
+            await DeleteTheCategory.InvokeAsync(Category.Id);
+            isDeleting = false;
+        }
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs changeEvent)
+    {
+        if (changeEvent.File is null)
+        {
+            Category!.ImageUrl = ImageHelper.DefaultCategoryPicture;
+        }
+        else if (changeEvent.File.Size > ImageHelper.MaxFileSize)
+        {
+            imageError = "Images must be less than 5MB";
+        }
+        else
+        {
+            try
+            {
+                Category!.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                imageError = "Could not read the selected file. Please select a different image.";
+            }
+        }
+    }
+}

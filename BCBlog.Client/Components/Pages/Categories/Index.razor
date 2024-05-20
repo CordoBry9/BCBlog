@@ -1,0 +1,152 @@
+﻿@page "/categories"
+@using BCBlog.Client.Components
+@using BCBlog.Client.Components.UI
+@using BCBlog.Client.Helpers
+@using BCBlog.Client.Services.Interfaces
+@inject ICategoryDTOService CategoryService
+@rendermode InteractiveServer
+
+<PageTitle>Blog | Categories</PageTitle>
+
+<div class="container">
+    <div class="row row-cols-2">
+        <div class="col">
+            <h3 class="text-light">Create a Category:</h3>
+            <EditForm Model="newCategory" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                <ul class="list-group my-3">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="square-img-container">
+                                    <img src="@(string.IsNullOrEmpty(newCategory.ImageUrl) ? ImageHelper.DefaultProfilePicture : newCategory.ImageUrl)" class="rounded-circle" />
+                                </div>
+                                <label class="form-label" for="categoryImage">Category Image</label>
+                                <div>
+                                    <InputFile OnChange="OnFileChange" id="categoryImage" class="form-control mt-2" accept=".png, .jpg, .jpeg, .svg" />
+                                    <span class="text-danger">@imageError</span>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label text-light" for="categoryName">Add a category</label>
+                                    <InputText class="form-control" placeholder="Category Name" @bind-Value="newCategory.Name" />
+                                    <ValidationMessage For="() => newCategory.Name"></ValidationMessage>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light" for="categoryDescription">Description</label>
+                                    <InputTextArea class="form-control" placeholder="Category Description" @bind-Value="newCategory.Description" />
+                                    <ValidationMessage For="() => newCategory.Description"></ValidationMessage>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-floppy"></i> Save
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </EditForm>
+        </div>
+        <div class="col">
+            <h3>Created Categories:</h3>
+            @foreach (CategoryDTO category in categories)
+            {
+                <ul class="list-group mt-3">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="@category.ImageUrl" class="img-fluid rounded-circle" alt="category image">
+                            </div>
+                            <div class="col-md-8 d-flex flex-column justify-content-center">
+                                <h5 class="text-center text-light">@category.Name</h5>
+                                <hr>
+                                <p class="text-center mt-3"><b>Description:</b></p>
+                                <p class="text-center">@category.Description</p>
+                                <hr />
+                                <CategoriesList Category="@category" DeleteTheCategory="DeleteCategory" UpdateTheCategory="UpdateCategory"></CategoriesList>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private CategoryDTO newCategory = new CategoryDTO();
+    private IEnumerable<CategoryDTO> categories = new List<CategoryDTO>();
+    private string? imageError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetCategoriesAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await CategoryService.CreateCategoryAsync(newCategory);
+            categories = (await CategoryService.GetCategoriesAsync()).ToList();
+            newCategory = new CategoryDTO();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs changeEvent)
+    {
+        if (changeEvent.File is null)
+        {
+            newCategory!.ImageUrl = ImageHelper.DefaultProfilePicture;
+        }
+        else if (changeEvent.File.Size > ImageHelper.MaxFileSize)
+        {
+            imageError = "Images must be less than 5MB";
+        }
+        else
+        {
+            try
+            {
+                newCategory!.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                imageError = "Could not read the selected file. Please select a different image.";
+            }
+        }
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        try
+        {
+            await CategoryService.DeleteCategoryAsync(categoryId);
+            categories = await CategoryService.GetCategoriesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    private async Task UpdateCategory(CategoryDTO category)
+    {
+        try
+        {
+            await CategoryService.UpdateCategoryAsync(category.Id, category);
+            categories = await CategoryService.GetCategoriesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+}
