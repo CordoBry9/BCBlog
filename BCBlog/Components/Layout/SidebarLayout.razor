@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+
+<main class="page-wrapper d-flex flex-column">
+    <NavMenu/>
+
+    <div class="container pt-5 pb-lg-5 pb-md-4 pb-2 my-5 flex-grow-1">
+        <div class="row">
+            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+                @Body
+            </div>
+        
+
+        <aside class="col-lg-3 offset-xl-1">
+            <SideBar></SideBar>
+        </aside>
+        </div>
+    </div>
+
+    <Footer/>
+
+    <!-- Sidebar toggle button -->
+    <button class="d-lg-none btn btn-sm fs-sm btn-primary w-100 rounded-0 fixed-bottom" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+        <i class="ai-layout-column me-2"></i>
+        Sidebar
+    </button>
+</main>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

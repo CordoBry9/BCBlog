@@ -1,52 +1,52 @@
-﻿@page "/categories"
+﻿@page "/author/categories/create"
 @using BCBlog.Client.Components
 @using BCBlog.Client.Components.UI
 @using BCBlog.Client.Helpers
 @using BCBlog.Client.Services.Interfaces
 @inject ICategoryDTOService CategoryService
 @rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Author")]
 
 <PageTitle>Blog | Categories</PageTitle>
 
 <div class="container">
-    <div class="row row-cols-2">
+    <div class="row">
         <div class="col">
-            <h3 class="text-light">Create a Category:</h3>
-            <EditForm Model="newCategory" OnValidSubmit="HandleSubmit">
-                <DataAnnotationsValidator />
-                <ul class="list-group my-3">
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="square-img-container">
-                                    <img src="@(string.IsNullOrEmpty(newCategory.ImageUrl) ? ImageHelper.DefaultProfilePicture : newCategory.ImageUrl)" class="rounded-circle" />
-                                </div>
-                                <label class="form-label" for="categoryImage">Category Image</label>
-                                <div>
-                                    <InputFile OnChange="OnFileChange" id="categoryImage" class="form-control mt-2" accept=".png, .jpg, .jpeg, .svg" />
-                                    <span class="text-danger">@imageError</span>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label class="form-label text-light" for="categoryName">Add a category</label>
-                                    <InputText class="form-control" placeholder="Category Name" @bind-Value="newCategory.Name" />
-                                    <ValidationMessage For="() => newCategory.Name"></ValidationMessage>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-light" for="categoryDescription">Description</label>
-                                    <InputTextArea class="form-control" placeholder="Category Description" @bind-Value="newCategory.Description" />
-                                    <ValidationMessage For="() => newCategory.Description"></ValidationMessage>
-                                </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-floppy"></i> Save
-                                </button>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Create a Category
+                </button>
+                <ul class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton" style="width: 400px;">
+                    <EditForm Model="newCategory" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+                        <div class="mb-3">
+                            <label class="form-label" for="categoryImage">Category Image</label>
+                            <div>
+                                <InputFile OnChange="OnFileChange" id="categoryImage" class="form-control" accept=".png, .jpg, .jpeg, .svg" />
+                                <img src="@(string.IsNullOrEmpty(newCategory.ImageUrl) ? ImageHelper.DefaultProfilePicture : newCategory.ImageUrl)" class="rounded mt-2" style="width: 100%; height: auto;" />
+                                <span class="text-danger">@imageError</span>
                             </div>
                         </div>
-                    </li>
+                        <div class="mb-3">
+                            <label class="form-label" for="categoryName">Category Name</label>
+                            <InputText id="categoryName" class="form-control" placeholder="Category Name" @bind-Value="newCategory.Name" />
+                            <ValidationMessage For="() => newCategory.Name"></ValidationMessage>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="categoryDescription">Description</label>
+                            <InputTextArea id="categoryDescription" class="form-control" placeholder="Category Description" @bind-Value="newCategory.Description" />
+                            <ValidationMessage For="() => newCategory.Description"></ValidationMessage>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy"></i> Save
+                        </button>
+                    </EditForm>
                 </ul>
-            </EditForm>
+            </div>
         </div>
+    </div>
+    <div class="row mt-3">
         <div class="col">
             <h3>Created Categories:</h3>
             @foreach (CategoryDTO category in categories)
@@ -55,10 +55,10 @@
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-md-4">
-                                <img src="@category.ImageUrl" class="img-fluid rounded-circle" alt="category image">
+                                <img src="@category.ImageUrl" class="img-fluid rounded-circle" alt="category image" style="width: 300px; height: 300px; object-fit: cover;">
                             </div>
-                            <div class="col-md-8 d-flex flex-column justify-content-center">
-                                <h5 class="text-center text-light">@category.Name</h5>
+                            <div class="col-md-8 d-flex flex-column justify-content-center g-3 p-3">
+                                <h5 class="text-center">@category.Name</h5>
                                 <hr>
                                 <p class="text-center mt-3"><b>Description:</b></p>
                                 <p class="text-center">@category.Description</p>
@@ -72,6 +72,7 @@
         </div>
     </div>
 </div>
+    
 
 @code {
     private CategoryDTO newCategory = new CategoryDTO();

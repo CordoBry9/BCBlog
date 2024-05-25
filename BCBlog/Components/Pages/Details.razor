@@ -1,0 +1,74 @@
+﻿@page "/posts/{slug}"
+@using BCBlog.Client.Components.UI
+@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@using BCBlog.Components.Layout
+@layout SidebarLayout
+@inject IBlogPostDTOService BlogPostService
+
+@if (blogPost == null)
+{
+    <PageTitle>Bryan C Blog | Not Found</PageTitle>
+    <div class="d-flex h-100 flex-column">
+        <h1>Uh Oh!</h1>
+        <p class="lead">This post could not be found</p>
+        <a href="/" class="btn btn-primary">Go back Home</a>
+    </div>
+}
+else
+{
+    <PageTitle>Bryan C Blog | @blogPost.Title</PageTitle>
+    <BlogPostDetails BlogPost="blogPost"></BlogPostDetails>
+
+    //Authorized view a non authorized view, diff is login option or user
+    <section class="container pt-xl-2 pb-5 mb-md-2 mb-lg-4 mb-xl-5" id="comments">
+        <div>
+            <AuthorizeView>
+                    <CommentForm @rendermode="InteractiveServer" BlogPost="blogPost" />
+            
+
+@*                 <NotAuthorized>
+                    <div class="collapse" id="commentsCollapse" style="max-width: 54rem;">
+                        <CommentEditForm @rendermode="InteractiveServer" BlogPost="blogPost"></CommentEditForm>
+                    </div>
+                </NotAuthorized> *@
+
+            </AuthorizeView>
+
+        </div>
+    </section>
+}
+
+@code {
+    #region parameters
+    [Parameter]
+    public string? Slug { get; set; }
+    #endregion
+
+    #region state
+    private BlogPostDTO? blogPost;
+    #endregion
+
+    #region methods
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (!string.IsNullOrEmpty(Slug))
+        {
+            try
+            {
+                blogPost = await BlogPostService.GetBlogPostBySlugAsync(Slug);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            // if (blogPost != null)
+            // {
+            //     Comments = blogPost.Comments.ToList();
+            // }
+        }
+    }
+    #endregion
+}

@@ -1,0 +1,105 @@
+﻿@if (BlogPost is not null)
+{
+
+    <!-- Breadcrumb-->
+    <nav aria-label="breadcrumb">
+        <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item"><a href="blog-list-sidebar.html">Blog</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Post</li>
+        </ol>
+    </nav>
+
+    <!-- Post title + post meta -->
+    <h1 class="pb-2 pb-lg-3">@BlogPost.Title</h1>
+    <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom mb-4">
+        <div class="d-flex align-items-center mb-4 me-4">
+            <span class="fs-sm me-2">By:</span>
+            <a class="nav-link position-relative fw-semibold p-0" href="#author" data-scroll data-scroll-offset="80">
+                Bryan Cordova
+                <span class="d-block position-absolute start-0 bottom-0 w-100" style="background-color: currentColor; height: 1px;"></span>
+            </a>
+        </div>
+        <div class="d-flex align-items-center mb-4">
+            <span class="fs-sm me-2">Share post:</span>
+            <div class="d-flex">
+                <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub" aria-label="GitHub">
+                    <i class="ai-github"></i>
+                </a>
+                <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
+                    <i class="ai-mail"></i>
+                </a>
+                <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram">
+                    <i class="ai-linkedin"></i>
+                </a>
+                <a class="nav-link p-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="X" aria-label="X">
+                    <i class="ai-x"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Post content -->
+    <p class="fs-lg pt-2 pt-sm-3 post-content">@((MarkupString)BlogPost.Content!)</p>
+    <img class="figure-img rounded-5 mb-3 post-content" src="@BlogPost.ImageUrl" alt="Image">
+
+    <!-- Tags -->
+    <div class="d-flex flex-wrap pb-5 pt-3 pt-md-4 pt-xl-5 mt-xl-n2">
+        <h3 class="h6 py-1 mb-0 me-4">Relevant tags:</h3>
+        @if (BlogPost.Tags is not null)
+        {
+            @foreach (TagDTO tag in BlogPost.Tags)
+            {
+                <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
+                    <span class="text-primary">@tag.Name</span>
+                </a>
+            }
+        }
+
+
+    </div>
+
+    <!-- Author widget -->
+    <div class="border-top border-bottom py-4" id="author">
+        <div class="d-flex align-items-start py-2">
+            <img class="d-block rounded-circle mb-3" src="api/uploads/author" width="56" alt="Author image">
+            <div class="d-md-flex w-100 ps-4">
+                <div style="max-width: 26rem;">
+                    <h3 class="h5 mb-2">Bryan Cordova</h3>
+                    <p class="fs-sm mb-0">Porta nisl a ultrices ut libero id. Gravida mi neque, tristique justo, et pharetra laoreet nulla est nulla cras ac arcu sed mattis tristique convallis suspen enim blandit massa cursus augue dui mattis morbi velit semper nunc at etiam lacinia.</p>
+                </div>
+                <div class="pt-4 pt-md-0 ps-md-4 ms-md-auto">
+                    <h3 class="h5">Share post:</h3>
+                    <div class="d-flex">
+                        <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="github" aria-label="github">
+                            <i class="ai-github"></i>
+                        </a>
+                        <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="mail" aria-label="mail">
+                            <i class="ai-mail"></i>
+                        </a>
+                        <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="linkedin" aria-label="linkedin">
+                            <i class="ai-linkedin"></i>
+                        </a>
+                        <a class="nav-link p-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="X" aria-label="X">
+                            <i class="ai-x"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+
+    [Parameter]
+
+    public BlogPostDTO? BlogPost { get; set; }
+
+    private BlogPostDTO? blogPost = new BlogPostDTO();
+
+    private TagDTO? Tag { get; set; }
+
+}

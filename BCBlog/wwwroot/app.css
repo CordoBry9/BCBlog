@@ -27,3 +27,25 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.rich-text-editor {
+    flex-grow: 1;
+    min-height: 400px;
+}
+
+.post-content p {
+    font-size: calc(var(--ar-body-font-size * 1.125));
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5 {
+    margin-top: 3rem;
+}
+
+.post-content img {
+    margin-bottom: 1rem;
+    border-radius: var(--ar-border-radius-xxl);
+}

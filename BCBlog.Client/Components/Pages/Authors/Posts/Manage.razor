@@ -1,0 +1,43 @@
+﻿@page "/author/posts/manage"
+@using BCBlog.Client.Components.UI
+@using BCBlog.Client.Services.Interfaces
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Author")]
+@inject IBlogPostDTOService BlogPostService
+@inject ICategoryDTOService CategoryService
+
+<div class="container mt-2">
+    <h3>Manage Blogs:</h3>
+    <div class="row">
+        <div class="col">
+            <ManagePosts @rendermode="InteractiveServer" BlogPosts="BlogPosts"></ManagePosts>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    #region parameters
+    #endregion
+
+    #region states
+    private IEnumerable<BlogPostDTO>? BlogPosts { get; set; }
+
+    private List<CategoryDTO>? categories { get; set; }
+    #endregion
+
+    #region methods
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            BlogPosts = await BlogPostService.GetBlogPostsAsync();
+            categories = (await CategoryService.GetCategoriesAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+    #endregion
+}

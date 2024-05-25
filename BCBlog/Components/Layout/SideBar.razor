@@ -1,0 +1,95 @@
+﻿@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@using BCBlog.Client.Components.UI
+@inject IBlogPostDTOService BlogPostService
+@inject ICategoryDTOService CategoryService
+
+<div class="offcanvas-lg offcanvas-end" id="sidebar">
+    <div class="offcanvas-header">
+        <h4 class="offcanvas-title">Sidebar</h4>
+        <button class="btn-close ms-auto" type="button" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+
+        <!-- Search box -->
+        <div class="position-relative mb-4 mb-lg-5">
+            <i class="ai-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+            <input class="form-control ps-5" type="search" placeholder="Enter keyword">
+        </div>
+
+        <!-- Popular posts -->
+        <h4 class="pt-1 pt-lg-0 mt-lg-n2">Top Categories:</h4>
+        <ul class="nav flex-column mb-lg-5 mb-4">
+            @if(TopCategories is not null)
+            {
+                @foreach (CategoryDTO category in TopCategories)
+                {
+                    <li class="mb-2">
+                        <a class="nav-link d-flex p-0" href="#">
+                            @category.Name
+                            <span class="fs-sm text-body-secondary ms-2">(@category.BlogPosts.Count)</span>
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+
+        <!-- Recent posts -->
+        <h4 class="pt-3 pt-lg-0 pb-1">Popular posts:</h4>
+        <div class="mb-lg-5 mb-4">
+            @if(TopPosts is not null)
+            {
+                @foreach (BlogPostDTO post in TopPosts)
+                {
+                    <article class="position-relative d-flex align-items-center mb-4">
+                        <img class="rounded" src="@post.ImageUrl" width="80px" height="80px" alt="Post image">
+                        <div class="ps-3">
+                            <h4 class="h6 mb-2">
+                                <a class="stretched-link" href="#">@post.Title</a>
+                            </h4>
+                            <span class="fs-sm text-body-secondary">@post.Created</span>
+                        </div>
+                    </article>
+                }
+            }
+
+        </div>
+
+
+    </div>
+</div>
+
+@code {
+    #region states
+    private PagedList<BlogPostDTO>? BlogPosts { get; set; }
+    private List<CategoryDTO>? TopCategories { get; set; }
+    private List<BlogPostDTO>? TopPosts { get; set; }
+    #endregion
+
+    #region methods
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            BlogPosts = (await BlogPostService.GetPublishedBlogPostsAsync(1, 5));
+
+            List<CategoryDTO> categories = (await CategoryService.GetCategoriesAsync()).ToList();
+
+            // Ensure blog posts have their categories and comments loaded properly
+            TopCategories = categories
+                .OrderByDescending(c => c.BlogPosts.Count)
+                .Take(5)
+                .ToList();
+
+            // Ensure blog posts have their comments loaded properly
+            TopPosts = BlogPosts.Data.ToList();
+
+                //turn this into a db query
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+    #endregion
+}

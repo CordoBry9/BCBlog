@@ -1,0 +1,187 @@
+﻿@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Forms
+@inject ICategoryDTOService CategoryService
+
+@if(Post != null)
+{
+    <EditForm Model="Post" OnValidSubmit="HandleSubmit" class="row">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <div class="col-lg-4">
+            <div class="mb-2">
+                <label class="form-label">Title</label>
+                <InputText class="form-control" @bind-Value="Post.Title"></InputText>
+                <ValidationMessage For="() => Post.Title"></ValidationMessage>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Abstract</label>
+                <InputText class="form-control" @bind-Value="Post.Abstract"></InputText>
+                <ValidationMessage For="() => Post.Abstract"></ValidationMessage>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Category</label>
+                <InputSelect class="form-control" @bind-Value="Post.CategoryId">
+                    <option value="">Select a Category</option>
+                    @foreach (CategoryDTO category in categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Post.CategoryId"></ValidationMessage>
+            </div>
+
+        </div>
+        <div class="col-lg-8 d-flex flex-column">
+            <div class="mb-2 flex-fill vstack">
+                <label class="form-label">Content</label>
+                <TinyMCE.Blazor.Editor ScriptSrc="/tinymce/tinymce.min.js" @bind-Value="Post.Content"
+                                       Field="() => Post.Content"
+                                       ClassName="rich-text-editor"
+                                       Conf="editorConfig" />
+                <ValidationMessage For="() => Post.Content"></ValidationMessage>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Tags</label>
+                <InputText @bind-Value="@tagNames" class="form-control" />
+
+            </div>
+        </div>
+        <div class="row d-flex flex-grow-0">
+            <div class="col-12 d-flex hstack g-3 justify-content-end">
+                <div class="form-check ms-2 mb-2">
+                    <label class="form-check-label">
+                        <InputCheckbox class="form-check-input me-2" @bind-Value="Post.IsPublished" />
+                        Publish
+                    </label>
+                </div>
+                <div class="form-check ms-2 mb-2">
+                    <label class="form-check-label">
+                        <InputCheckbox class="form-check-input me-2" @bind-Value="Post.IsDeleted" />
+                        Delete
+                    </label>
+                </div>
+            </div>
+            <div class="mb-2 "></div>
+            <div class="col-12 text-end"><button type="submit" class="btn btn-primary">Save</button></div>
+            
+        </div>
+
+        <ValidationSummary></ValidationSummary>
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public BlogPostDTO? Post { get; set; }
+
+    [Parameter]
+    public EventCallback<BlogPostDTO> OnSubmit { get; set; }
+
+    private IEnumerable<CategoryDTO> categories = new List<CategoryDTO>();
+    private string? imageError;
+    private string? fileError;
+
+    private string tagNames = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await CategoryService.GetCategoriesAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        List<string> names = new List<string>();
+
+        foreach(TagDTO tag in Post!.Tags)
+        {
+            names.Add(tag.Name!);
+        }
+        // if (Post?.Tags != null)
+        // {
+        //     tagNames = string.Join(", ", Post.Tags.Select(t => t.Name));
+        // }
+        tagNames = string.Join(", ", names);
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+
+            IEnumerable<string> listOfNames = tagNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+            List<TagDTO> tags = new List<TagDTO>();
+
+            foreach(string name in listOfNames)
+            {
+                TagDTO tag = new TagDTO() {Name = name };
+                tags.Add(tag);
+            }
+
+            Post!.Tags = tags;
+
+            // shorter way of doing it: Post!.Tags = [.. listOfNames.Select(name => new TagDTO() { Name = name })];
+
+            await OnSubmit.InvokeAsync(Post);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs changeEvent)
+    {
+        imageError = null;
+
+        if (changeEvent.File is null)
+        {
+            Post!.ImageUrl = ImageHelper.DefaultProfilePicture;
+        }
+        else if (changeEvent.File.Size > ImageHelper.MaxFileSize)
+        {
+            imageError = "Images must be less than 5MB";
+        }
+        else
+        {
+            try
+            {
+                Post!.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                imageError = "Could not read the selected file. Please select a different image.";
+            }
+        }
+    }
+
+    private static readonly Dictionary<string, object> editorConfig = new()
+    {
+        { "toolbar", "undo redo | bold italic underline | link codesample " },
+        { "plugins", "anchor autolink link charmap preview table codesample" },
+        { "default_link_target", "_blank" },
+        { "link_assume_external_targets", true },
+        { "link_context_toolbar", true },
+        { "codesample_languages", new object[] {
+                new { text = "HTML/XML", value = "markup" },
+                new { text = "JavaScript", value = "javascript" },
+                new { text = "CSS", value = "css" },
+                new { text = "C#", value = "csharp" },
+                new { text = "Razor", value = "razor" },
+                new { text = "JSON", value = "json" },
+    }},
+        { "codesample_global_prismjs", true },
+        { "promotion", false },
+        { "height", "100%" },
+    };
+}

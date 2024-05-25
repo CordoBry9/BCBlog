@@ -1,7 +1,81 @@
 ﻿@page "/"
+@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@using BCBlog.Models
+@using BCBlog.Services.Interfaces
+@using BCBlog.Client.Components.UI
+@inject IBlogPostDTOService BlogPostService
+@using BCBlog.Components.Layout
+@layout SidebarLayout
 
-<PageTitle>Home</PageTitle>
+@if (BlogPosts != null)
+{
+    <div class="container pb-lg-5 pb-md-4 pt-2">
+        <div class="row mb-md-2 mb-xl-4">
+            <!-- Blog posts -->
+            <div class="col pe-lg-4">
+                <h1 class="pb-3 pb-lg-4">Blog list with sidebar</h1>
 
-<h1>Hello, world!</h1>
+                <!-- Post -->
+                @foreach (BlogPostDTO post in BlogPosts.Data)
+                {
+                    @if (post.IsPublished)
+                    {
+                        <BlogPostsList BlogPost="post"></BlogPostsList>
+                    }
+                }
+            </div>
+            <div class="row gy-3 align-items-center mt-lg-5 pt-2 pt-md-4 pt-lg-0 hstack">
+                <div class="col text-center">
+                        @if (Page > 1)
+                        {
+                            <a href="?page=@(Page - 1)"><i class="ai-arrow-left fs-2"></i></a>
+                        }
+                </div>
+                <div class="col col-md-4 col-4 text-center">
+                    <div class="btn btn-primary w-md-auto w-100">Page @BlogPosts.Page of @BlogPosts.TotalPages</div>
+                </div>
+                <div class="col col-md-4 col-6 text-center">
+                    @if (Page < BlogPosts.TotalPages)
+                    {
+                        <a href="?page=@(Page + 1)"><i class="ai-arrow-right fs-2"></i></a>
+                    }
+@*                     <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm justify-content-end">
+                            <li class="page-item"><a class="page-link" href="?page=@(Page = 1)">1</a></li>
+                            <li class="page-item"><a class="page-link" href="?page=@(Page = 2)">2</a></li>
+                        </ul>
+                    </nav> *@
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
-Welcome to your new app.
+@code
+{
+    #region states
+    [SupplyParameterFromQuery]
+    public int Page { get; set; }
+
+    private int pageSize = 4;
+    private PagedList<BlogPostDTO>? BlogPosts = new PagedList<BlogPostDTO>();
+    #endregion
+
+    #region methods
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            if (Page < 1) Page = 1;
+            BlogPosts = (await BlogPostService.GetPublishedBlogPostsAsync(Page, pageSize));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+    #endregion
+}
+
+

@@ -1,0 +1,54 @@
+﻿@page "/author/posts/edit/{blogPostId:int}"
+@using BCBlog.Client.Components.UI
+@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@inject IBlogPostDTOService BlogPostService
+@inject ICategoryDTOService CategoryService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Edit Blog Post</h3>
+
+@if (Post != null)
+{
+    <BlogFormPosts Post="Post" OnSubmit="HandleSubmit"></BlogFormPosts>
+}
+
+@code {
+
+    [Parameter]
+    public int blogPostId { get; set; }
+
+    private BlogPostDTO? Post { get; set; }
+
+    private IEnumerable<BlogPostDTO> posts = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Post = await BlogPostService.GetBlogPostByIdAsync(blogPostId);
+            if (Post == null)
+            {
+                Navigation.NavigateTo("/");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await BlogPostService.UpdateBlogPostAsync(blogPostId, Post!);
+            Navigation.NavigateTo("/author/posts/manage");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+}

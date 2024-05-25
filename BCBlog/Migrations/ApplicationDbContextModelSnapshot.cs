@@ -114,10 +114,6 @@ namespace BCBlog.Migrations
                         .HasMaxLength(600)
                         .HasColumnType("character varying(600)");
 
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
 
@@ -142,14 +138,14 @@ namespace BCBlog.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTimeOffset?>("Updated")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CategoryId");
 
@@ -419,12 +415,6 @@ namespace BCBlog.Migrations
 
             modelBuilder.Entity("BCBlog.Models.BlogPost", b =>
                 {
-                    b.HasOne("BCBlog.Data.ApplicationUser", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BCBlog.Models.Category", "Category")
                         .WithMany("BlogPosts")
                         .HasForeignKey("CategoryId")
@@ -434,8 +424,6 @@ namespace BCBlog.Migrations
                     b.HasOne("BCBlog.Models.ImageUpload", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId");
-
-                    b.Navigation("AppUser");
 
                     b.Navigation("Category");
 

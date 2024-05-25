@@ -12,7 +12,6 @@ namespace BCBlog.Client.Models
 
         public string? Title { get; set; }
 
-        [Required]
         public string? Slug { get; set; }
 
         [Required]
@@ -37,7 +36,7 @@ namespace BCBlog.Client.Models
         public bool IsPublished { get; set; }
         public bool IsDeleted { get; set; }
         public string? ImageUrl { get; set; }
-
+ 
         public int CategoryId { get; set; }
         public CategoryDTO? Category { get; set; }
         public ICollection<CommentDTO> Comments { get; set; } = new HashSet<CommentDTO>();

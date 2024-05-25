@@ -1,0 +1,101 @@
+﻿@using BCBlog.Client.Services.Interfaces
+@inject IBlogPostDTOService BlogPostService
+
+@if (BlogPosts != null)
+{
+    @foreach (BlogPostDTO BlogPost in BlogPosts)
+    {
+        <article @key="BlogPost.Id" class="row g-0 mb-5">
+            <img class="col-sm-5 bg-repeat-0 bg-size-cover bg-position-center rounded-5 img-fluid" src="@BlogPost.ImageUrl" style="max-height: 17rem; max-width: 17rem;" aria-label="Post image" />
+            <div class="col-sm-7">
+                <div class="row pt-4 pb-sm-4 ps-sm-4 pe-lg-4 ">
+                    <div class="col">
+                        <h3>
+                            <a href="#">@BlogPost.Title</a>
+                        </h3>
+                        <p class="d-sm-none d-md-block">@BlogPost.Abstract</p>
+                        <div class="d-flex flex-wrap align-items-center">
+                            <a class="nav-link text-body-secondary fs-sm fw-normal d-flex align-items-end p-0 mt-2" href="#">
+                                @BlogPost.Comments.Count
+                                <i class="ai-message fs-lg ms-1"></i>
+                            </a>
+                            <span class="fs-xs opacity-20 mt-2 mx-3">|</span>
+                            @if (BlogPost.Category is not null)
+                            {
+                                <div class="badge text-nav fs-xs border mt-2 px-3 py-1"><div class="py-1">@BlogPost.Category.Name</div></div>
+                            }
+                            <span class="fs-xs opacity-20 mt-2 mx-3">|</span>
+
+                            <span class="fs-sm text-body-secondary mt-2">@BlogPost.Created</span>
+                        </div>
+
+                        <div class="col d-flex align-items-center justify-content-start p-2 m-2">
+                            <b>Tags:</b>
+                            @if (BlogPost.Tags is not null)
+                            {
+                                @foreach (TagDTO tag in BlogPost.Tags)
+                                {
+                                    <a class="badge text-nav fs-xs border mt-2 ms-2 px-3 py-1"><div class="py-1">#@tag.Name</div></a>
+                                }
+                            }
+                        </div>
+
+                        <a class="badge text-success fs-xs border mt-2 px-3 py-1" href="/author/posts/edit/@BlogPost.Id"><i class="ai-pencil fs-lg"></i></a>
+                        <span class="fs-xs opacity-20 mt-2 mx-3">|</span>
+                        <button class="btn btn-outline-secondary fs-xs border px-3 py-1" @onclick="() => ToggleDeleteStatus(BlogPost)">
+                            @if (BlogPost.IsDeleted)
+                            {
+                                <i class="ai-check-alt text-success me-1"></i>
+                                <span>Restore</span>
+                            }
+                            else
+                            {
+                                <i class="ai-trash text-danger me-1"></i>
+                                <span>Delete</span>
+                            }
+                        </button>
+                        <span class="fs-xs opacity-20 mt-1 mx-3">|</span>
+                        <button class="btn btn-info fs-xs border px-3 py-1" @onclick="() => TogglePublish(BlogPost)">
+                            @if (BlogPost.IsPublished)
+                            {
+                                <i class="ai-hide me-1"></i>
+                                <span>Unpublish</span>
+                            }
+                            else
+                            {
+                                <i class="ai-show me-1"></i>
+                                <span>Publish</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </article>
+    }
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<BlogPostDTO>? BlogPosts { get; set; }
+
+    private async Task TogglePublish(BlogPostDTO blogPost)
+    {
+        if (blogPost.IsPublished)
+        {
+            await BlogPostService.UnpublishBlogPostAsync(blogPost.Id);
+        }
+        else
+        {
+            await BlogPostService.PublishBlogPostAsync(blogPost.Id);
+        }
+        blogPost.IsPublished = !blogPost.IsPublished;
+        StateHasChanged();
+    }
+
+    private async Task ToggleDeleteStatus(BlogPostDTO blogPost)
+    {
+        blogPost.IsDeleted = !blogPost.IsDeleted;
+        await BlogPostService.UpdateBlogPostAsync(blogPost.Id, blogPost);
+        StateHasChanged();
+    }
+}

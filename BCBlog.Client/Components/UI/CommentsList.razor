@@ -1,0 +1,86 @@
+﻿@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@using Microsoft.AspNetCore.Components
+@using BCBlog.Client.Helpers
+@inject ICommentDTOService CommentService
+
+@if (Comment != null)
+{
+    <div class="border-bottom pt-2 pb-4">
+        <div class="d-flex align-items-center pb-1 mb-3">
+            <img class="rounded-circle" src="@Comment.AuthorImageUrl" width="48" alt="Comment author image">
+            <div class="ps-3">
+                <h6 class="mb-0">@Comment.AuthorName</h6>
+                <span class="fs-sm text-body-secondary">@Comment.Created</span>
+            </div>
+        </div>
+        <p class="pb-2 mb-0">@((MarkupString)Comment.Content!)</p>
+        <button class="nav-link fs-sm fw-semibold px-0 py-2" @onclick="() => isDeleting = true">
+            Delete
+            <i class="ai-trash fs-xl ms-2"></i>
+        </button>
+        @if (isDeleting == true)
+        {
+            <div class="text-danger mt-1">Are you sure you want to delete the comment?</div>
+            <button class="btn btn-sm btn-danger mt-2" @onclick="() => HandleDelete(Comment.Id)">Delete</button>
+            <button class="btn btn-sm btn-secondary mt-2" @onclick="() => isDeleting = false">Cancel</button>
+        }
+
+    </div>
+}
+
+
+
+@code {
+
+    private bool isDeleting = false;
+    private bool isEditing = false;
+
+
+
+    // [Parameter, EditorRequired]
+    // public EventCallback<int> UpdateTheComment { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> DeleteTheComment { get; set; }
+
+    [Parameter]
+    public CommentDTO? Comment { get; set; }
+
+    [Parameter]
+    public UserInfo? userInfo {get ; set; }
+
+
+    private async Task HandleDelete(int commentId)
+    {
+        try
+        {
+            await DeleteTheComment.InvokeAsync(Comment!.Id);
+            isDeleting = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private static readonly Dictionary<string, object> editorConfig = new()
+    {
+        { "toolbar", "undo redo | bold italic underline | link codesample " },
+        { "plugins", "anchor autolink link charmap preview table codesample" },
+        { "default_link_target", "_blank" },
+        { "link_assume_external_targets", true },
+        { "link_context_toolbar", true },
+        { "codesample_languages", new object[] {
+                new { text = "HTML/XML", value = "markup" },
+                new { text = "JavaScript", value = "javascript" },
+                new { text = "CSS", value = "css" },
+                new { text = "C#", value = "csharp" },
+                new { text = "Razor", value = "razor" },
+                new { text = "JSON", value = "json" },
+    }},
+        { "codesample_global_prismjs", true },
+        { "promotion", false },
+        { "height", "100%" },
+    };
+}

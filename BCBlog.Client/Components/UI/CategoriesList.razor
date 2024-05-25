@@ -2,11 +2,14 @@
 @if (isEditing == false)
 {
     <div class="fs-4 mt-2 d-flex justify-content-center">
-        <a class="me-3 btn btn-primary justify-content-end" role="button" @onclick="() => isEditing = true">
-            <i class="ai-pencil"></i> Edit
+        <a class="me-3 btn btn-primary justify-content-end mt-2" role="button" @onclick="() => isEditing = true">
+            <i class="ai-pencil"></i>&nbsp;Edit
         </a>
-        <a class="me-3 btn btn-danger justify-content-end" role="button" @onclick="() => isDeleting = true">
-            <i class="ai-trash"></i> Delete
+        <a class="me-3 btn btn-danger justify-content-end mt-2" role="button" @onclick="() => isDeleting = true">
+            <i class="ai-trash"></i>&nbsp;Delete
+        </a>
+        <a class="me-3 btn btn-info justify cotent-end mt-2" role="button">
+            <i class="ai-dashboard"></i>&nbsp;Posts
         </a>
     </div>
 }
@@ -16,7 +19,7 @@ else
         <DataAnnotationsValidator />
         <div class="form-group">
             <label for="categoryName">Name</label>
-            <InputText id="categoryName" class="form-control" @bind-Value="Category.Name" />
+            <InputText id="categoryName" class="form-control" @bind-Value="Category!.Name" />
             <ValidationMessage For="() => Category.Name" />
         </div>
         <div class="form-group">

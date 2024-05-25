@@ -37,7 +37,7 @@ namespace BCBlog.Models
 
             foreach (BlogPost blogpost in category.BlogPosts)
             {
-                category.BlogPosts.Clear();
+                
                 BlogPostDTO blogpostDTO = blogpost.ToDTO();
                 dto.BlogPosts.Add(blogpostDTO);
 

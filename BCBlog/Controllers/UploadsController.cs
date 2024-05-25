@@ -1,4 +1,5 @@
-﻿using BCBlog.Data;
+﻿using BCBlog.Client.Helpers;
+using BCBlog.Data;
 using BCBlog.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ namespace BCBlog.Controllers
     public class UploadsController(ApplicationDbContext context) : ControllerBase
     {
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}")] 
         [OutputCache(VaryByRouteValueNames = ["id"], Duration = 60 * 60)]
 
         public async Task<IActionResult> GetImage(Guid id)
@@ -24,6 +25,26 @@ namespace BCBlog.Controllers
 
         }
 
+        [HttpGet("author")] //api/uploads/author
+        [OutputCache(Duration = 60 * 60)]
 
+        public async Task<IActionResult> GetAuthorImage([FromServices] IConfiguration config)
+        {
+            string? authorEmail = config["AdminEmail"] ?? Environment.GetEnvironmentVariable("AdminEmail");
+
+            ApplicationUser? author = await context.Users.Include(u => u.Image).FirstOrDefaultAsync(u => u.Email == authorEmail);
+
+            if (author?.Image is not null) //checks if both author and image are null
+            {
+                return File(author.Image.Data!, author.Image.Type!);    
+            }
+            else
+            {
+                string extension = ImageHelper.DefaultProfilePicture.Split('.')[^1];
+                if (extension == "svg") extension = "svg+xml";
+
+                return File(ImageHelper.DefaultProfilePicture, $"image/{extension}");
+            }
+        }
     }
 }

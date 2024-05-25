@@ -14,6 +14,9 @@ namespace BCBlog.Models
         private DateTimeOffset? _updated;
         public int Id { get; set; }
 
+        [Required]
+        [Display(Name = "Title")]
+        [StringLength(200, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 2)]
         public string? Title { get; set; }
 
         [Required]
@@ -44,12 +47,7 @@ namespace BCBlog.Models
         public virtual ImageUpload? Image { get; set; }
 
         [Required]
-        public string? AppUserId { get; set; }
-
-        public virtual ApplicationUser? AppUser { get; set; }
-
         public int CategoryId { get; set; }
-
         public virtual Category? Category { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
@@ -77,16 +75,26 @@ namespace BCBlog.Models
                 CategoryId = blogpost.CategoryId,
             };
 
-            foreach(Tag tag in blogpost.Tags)
+            if (blogpost.Category is not null)
             {
-                blogpost.Tags.Clear();
+                blogpost.Category.BlogPosts = [];
+
+                CategoryDTO categoryDTO = blogpost.Category.ToDTO();
+                dto.Category = categoryDTO;
+            }
+
+            foreach (Tag tag in blogpost.Tags)
+            {
+                tag.BlogPosts = [];
+
                 TagDTO tagDTO = tag.ToDTO();
                 dto.Tags.Add(tagDTO);
             }
 
             foreach (Comment comment in blogpost.Comments)
             {
-                blogpost.Comments.Clear();
+              
+
                 CommentDTO commentDTO = comment.ToDTO();
                 dto.Comments.Add(commentDTO);
             }

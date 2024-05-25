@@ -1,0 +1,26 @@
+﻿@page "/author/posts/create"
+@using BCBlog.Client.Components.UI
+@using BCBlog.Client.Services.Interfaces
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Author")]
+@inject IBlogPostDTOService BlogPostService
+
+<div class="container">
+    <h3>New Blog Post</h3>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <BlogFormPosts Post ="new BlogPostDTO()" OnSubmit="HandleSubmit"></BlogFormPosts>
+        </div>
+    </div>
+</div>
+
+@code {
+    private async Task HandleSubmit(BlogPostDTO blogPost)
+    {
+
+        await BlogPostService.CreateBlogPostAsync(blogPost);
+
+        Console.WriteLine("Submitted!");
+    }
+}

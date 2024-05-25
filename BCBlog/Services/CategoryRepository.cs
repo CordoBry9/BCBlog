@@ -21,7 +21,7 @@ namespace BCBlog.Services
         {
             using ApplicationDbContext context = contextFactory.CreateDbContext();
 
-            IEnumerable<Category> categories = await context.Categories.ToListAsync();
+            IEnumerable<Category> categories = await context.Categories.Include(bp => bp.BlogPosts).ToListAsync();
 
             return categories;
         }

@@ -7,6 +7,7 @@ namespace BCBlog.Client.Helpers
 
         public static readonly string DefaultCategoryPicture = "/img/Default_pfp.svg";
         public static readonly string DefaultProfilePicture = "/img/Default_pfp.svg";
+        public static readonly string DefaultBlogPicture = "/img/Default_pfp.svg";
         public static readonly int MaxFileSize = 5 * 1024 * 1024;
 
         public static async Task<string> GetDataUrl(IBrowserFile file)
