@@ -41,7 +41,7 @@ namespace BCBlog.Services
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             PagedList<BlogPost> blogPosts = await context.BlogPosts.Where(b => b.IsPublished && !b.IsDeleted).Include(b => b.Category)
-                .Include(b => b.Tags).OrderByDescending(b => b.Created).ToPagedListAsync(page, pageSize);
+                .Include(b => b.Tags).Include(b => b.Comments).OrderByDescending(b => b.Created).ToPagedListAsync(page, pageSize);
 
             return blogPosts;
 
@@ -54,6 +54,7 @@ namespace BCBlog.Services
             IEnumerable<BlogPost> blogPosts = await context.BlogPosts
                 .Include(bp => bp.Category)
                 .Include(bp => bp.Tags)
+                .Include(bp => bp.Comments)
                 .OrderByDescending(b => b.Created)
                 .ToListAsync();
 
@@ -210,7 +211,7 @@ namespace BCBlog.Services
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             BlogPost blogPost = (await context.BlogPosts.Where(b=>b.IsPublished == true && b.IsDeleted == false)
-                .Include(b => b.Comments).ThenInclude(c => c.Author)
+                .Include(b => b.Comments).ThenInclude(c => c.Author).OrderByDescending(b => b.Created)
                 .Include(b => b.Tags).Include(b => b.Category).FirstOrDefaultAsync(b => b.Slug == slug))!;
 
             return blogPost;

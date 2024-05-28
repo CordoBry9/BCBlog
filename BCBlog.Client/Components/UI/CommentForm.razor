@@ -3,40 +3,34 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject ICommentDTOService CommentService
 
-<EditForm Model="Comment" OnValidSubmit="HandleSubmit" class="row">
+
+<EditForm Model="newComment" OnValidSubmit="HandleSubmit" class="row">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div class="col-12 d-flex flex-column">
         <div class="mb-2 flex-fill vstack">
-            <label class="form-label mt-2"><h4>Make a Comment</h4></label>
-            <TinyMCE.Blazor.Editor ScriptSrc="/tinymce/tinymce.min.js" @bind-Value="Comment.Content"
-                                   Field="() => Comment.Content"
+            <label class="form-label mt-2"><h4>Write a Comment:</h4></label>
+            <TinyMCE.Blazor.Editor ScriptSrc="/tinymce/tinymce.min.js" @bind-Value="newComment!.Content"
+                                   Field="() => newComment!.Content"
                                    ClassName="rich-text-editor"
                                    Conf="editorConfig" />
-            <ValidationMessage For="() => Comment.Content"></ValidationMessage>
+            <ValidationMessage For="() => newComment.Content"></ValidationMessage>
         </div>
-
+        <div class="row d-flex">
+            <div class="col-12 text-end mb-4"><button type="submit" class="btn btn-primary">Save</button></div>
+        </div>
     </div>
-    <div class="row d-flex flex-grow-0">
-        <div class="col-12 text-end"><button type="submit" class="btn btn-primary">Save</button></div>
-    </div>
-
-    <ValidationSummary></ValidationSummary>
 </EditForm>
 
-@if (BlogPost?.Comments != null)
-{
-    <div class="collapse" id="commentsCollapse" style="max-width: 54rem;">
 
-        @foreach (CommentDTO comment in BlogPost.Comments)
-        {
-            <CommentsList Comment="comment" userInfo="userInfo" DeleteTheComment="HandleDelete" />
-        }
-    </div>
-    <div class="nav">
-        <button class="btn-more nav-link collapsed w-100 justify-content-center p-3" type="button" data-bs-toggle="collapse" data-bs-target="#commentsCollapse" aria-expanded="false" aria-controls="commentsCollapse" data-show-label="Show all comments" data-hide-label="Hide all comments" aria-label="Show / hide comments">
-                    <span class="fw-normal opacity-70 ms-1">(@BlogPost.Comments.Count)</span>
-        </button>
-    </div>
+@if (BlogPostComments != null)
+{
+    <h4 class="mt-4">Comments:</h4>
+    <hr />
+    @foreach (CommentDTO comment in BlogPostComments)
+    {
+        <CommentsList @rendermode="InteractiveServer" Comment="comment" userInfo="userInfo" DeleteTheComment="HandleDelete" UpdateTheComment="HandleUpdate"/>
+    }
+
 }
 
 @code {
@@ -45,13 +39,10 @@
     private Task<AuthenticationState>? AuthStateTask { get; set; }
 
     [Parameter]
-    public CommentDTO Comment { get; set; } = new CommentDTO();
-
-    [Parameter]
     public BlogPostDTO? BlogPost { get; set; }
 
     private IEnumerable<CommentDTO> BlogPostComments = [];
-    private CommentDTO? newComment;
+    private CommentDTO newComment = new CommentDTO();
     private string? imageError;
     private string? fileError;
     private UserInfo? userInfo;
@@ -60,19 +51,15 @@
     {
         try
         {
-            AuthenticationState authState = await AuthStateTask!;
 
             userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            newComment.AuthorId = userInfo?.UserId;
+            newComment.AuthorName = userInfo?.FullName;
+            newComment.BlogPostId = BlogPost!.Id;
+            newComment.AuthorImageUrl = userInfo?.ProfilePictureUrl;
 
-            newComment = new CommentDTO()
-                {
-                    AuthorId = userInfo!.UserId,
-                    AuthorName = userInfo!.FullName,
-                    BlogPostId = BlogPost!.Id,
-                    AuthorImageUrl = userInfo!.ProfilePictureUrl
-                };
+            BlogPostComments = await CommentService.GetBlogPostCommentsAsync(BlogPost.Id);
 
-            BlogPostComments = await CommentService.GetBlogPostCommentsAsync(BlogPost!.Id);
         }
         catch (Exception ex)
         {
@@ -84,18 +71,38 @@
     {
         try
         {
-            if (userInfo?.UserId is not null)
-            {
-                Comment.AuthorName = userInfo.FullName;
-                Comment.AuthorId = userInfo.UserId;
-                Comment.BlogPostId = BlogPost!.Id;
-                await CommentService.CreateCommentAsync(Comment);
-                //newComments.Add(newComment);
-                // COmments = latest comments from DB
-            }
+            newComment = new CommentDTO()
+                {
+                    AuthorId = userInfo!.UserId,
+                    AuthorName = userInfo!.FullName,
+                    BlogPostId = BlogPost!.Id,
+                    AuthorImageUrl = userInfo!.ProfilePictureUrl,
+                    Content = newComment?.Content,
+                };
+
+            await CommentService.CreateCommentAsync(newComment!);
+            BlogPostComments = await CommentService.GetBlogPostCommentsAsync(BlogPost!.Id);
+
+            newComment = new CommentDTO();
+
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task HandleUpdate(CommentDTO comment)
+    {
+        try
+        {
+            await CommentService.UpdateCommentAsync(comment);
+            BlogPostComments = await CommentService.GetBlogPostCommentsAsync(BlogPost!.Id);
+
+        }
+        catch (Exception ex)
+        {
+
             Console.WriteLine(ex);
         }
     }
@@ -106,7 +113,7 @@
         {
             await CommentService.DeleteCommentAsync(commentId);
             BlogPostComments = await CommentService.GetBlogPostCommentsAsync(BlogPost!.Id);
-            StateHasChanged();
+
         }
         catch (Exception ex)
         {

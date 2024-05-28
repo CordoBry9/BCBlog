@@ -1,0 +1,46 @@
+﻿@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@using Microsoft.AspNetCore.Components
+@using BCBlog.Client.Helpers
+@inject ICommentDTOService CommentService
+
+@if (BlogPost!= null)
+//add link that says click here to comment or login to comment
+{
+    <h4 class="mt-4 mb-4">Comments: @BlogPost.Comments.Count</h4>
+    @foreach(CommentDTO comment in BlogPostComments)
+    {
+        <div class="border-bottom pt-2 pb-4">
+            <div class="d-flex align-items-center pb-1 mb-3">
+                <img class="rounded-circle" src="@comment.AuthorImageUrl" width="48" alt="Comment author image">
+                <div class="ps-3">
+                    <h6 class="mb-0">@comment.AuthorName</h6>
+                    <span class="fs-sm text-body-secondary">@comment.Created</span>
+                </div>
+            </div>
+            <p class="pb-2 mb-0">@((MarkupString)comment.Content!)</p>
+        </div>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public BlogPostDTO? BlogPost { get; set; }
+    private IEnumerable<CommentDTO> BlogPostComments = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            BlogPostComments = await CommentService.GetBlogPostCommentsAsync(BlogPost!.Id);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+}
+

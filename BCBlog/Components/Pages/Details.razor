@@ -21,29 +21,34 @@ else
     <BlogPostDetails BlogPost="blogPost"></BlogPostDetails>
 
     //Authorized view a non authorized view, diff is login option or user
-    <section class="container pt-xl-2 pb-5 mb-md-2 mb-lg-4 mb-xl-5" id="comments">
-        <div>
-            <AuthorizeView>
-                    <CommentForm @rendermode="InteractiveServer" BlogPost="blogPost" />
-            
+    <AuthorizeView>
+        <Authorized>
+            <section class="container pt-xl-2 pb-5 mb-md-2 mb-lg-4 mb-xl-5" id="comments">
+                <div>
+                    <CommentForm @rendermode="InteractiveServer" BlogPost="blogPost"></CommentForm>
+                </div>
+            </section>
+        </Authorized>
+        <NotAuthorized>
+              <section class="container pt-xl-2 pb-5 mb-md-2 mb-lg-4 mb-xl-5" id="comments">
+                <div>
+            <GuestCommentList @rendermode="InteractiveServer" BlogPost="blogPost"></GuestCommentList>
+                </div>
+            </section>
+        </NotAuthorized>
+    </AuthorizeView>
 
-@*                 <NotAuthorized>
-                    <div class="collapse" id="commentsCollapse" style="max-width: 54rem;">
-                        <CommentEditForm @rendermode="InteractiveServer" BlogPost="blogPost"></CommentEditForm>
-                    </div>
-                </NotAuthorized> *@
-
-            </AuthorizeView>
-
-        </div>
-    </section>
 }
 
 @code {
     #region parameters
     [Parameter]
     public string? Slug { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
     #endregion
+
 
     #region state
     private BlogPostDTO? blogPost;
@@ -63,11 +68,6 @@ else
             {
                 Console.WriteLine(ex);
             }
-
-            // if (blogPost != null)
-            // {
-            //     Comments = blogPost.Comments.ToList();
-            // }
         }
     }
     #endregion

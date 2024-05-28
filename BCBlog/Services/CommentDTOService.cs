@@ -21,17 +21,17 @@ namespace BCBlog.Services
                 
             };
 
-            if (commentDTO.AuthorImageUrl?.StartsWith("data:") == true)
-            {
-                try
-                {
-                    //comment.Author.Image = UploadHelper.GetImageUpload(commentDTO.AuthorImageUrl);
-                }
-                 catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
+            //if (commentDTO.AuthorImageUrl?.StartsWith("data:") == true)
+            //{
+            //    try
+            //    {
+            //        comment.Author.Image = UploadHelper.GetImageUpload(commentDTO.AuthorImageUrl);
+            //    }
+            //     catch (Exception ex)
+            //    {
+            //        Console.WriteLine(ex);
+            //    }
+            //}
 
             Comment createdComment = await repository.CreateCommentAsync(comment);
             return createdComment.ToDTO();
@@ -63,6 +63,27 @@ namespace BCBlog.Services
             return commentDTOs;
         }
 
+        public async Task<CommentDTO?> GetCommentByIdAsync(int commentId)
+        {
+            Comment comment = await repository.GetCommentByIdAsync(commentId);
+
+            return comment.ToDTO();
+        }
+
+        public async Task UpdateCommentAsync(CommentDTO commentDTO)
+        {
+            Comment? updateComment = await repository.GetCommentByIdAsync(commentDTO.Id);
+
+            if(updateComment != null)
+            {
+                updateComment.Updated = DateTimeOffset.Now;
+                updateComment.BlogPostId = commentDTO.BlogPostId;
+                updateComment.UpdateReason = commentDTO.UpdateReason;
+                updateComment.Content = commentDTO.Content;
+
+                await repository.UpdateCommentAsync(updateComment);
+            }
+        }
     }
 }
 

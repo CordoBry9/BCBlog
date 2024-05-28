@@ -51,6 +51,28 @@ namespace BCBlog.Services
             return comments;
 
         }
+
+        public async Task<Comment> GetCommentByIdAsync(int commentId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            Comment? comment = (await context.Comments.FirstOrDefaultAsync(c => c.Id == commentId))!;
+
+            return comment;
+        }
+
+        public async Task UpdateCommentAsync(Comment comment)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            bool shouldUpdate = await context.Comments.AnyAsync(c => c.Id == comment.Id);
+
+            if (shouldUpdate)
+            {
+                context.Comments.Add(comment);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }
 

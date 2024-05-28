@@ -8,6 +8,10 @@ namespace BCBlog.Services.Interfaces
         // Other methods like GetCommentsByBlogPostIdAsync can be added here
         Task DeleteCommentAsync(int commentId);
         Task<IEnumerable<Comment>> GetBlogPostCommentsAsync(int blogpostId);
+
+        Task<Comment> GetCommentByIdAsync(int commentId);
+
+        Task UpdateCommentAsync(Comment comment);
     }
 
 }

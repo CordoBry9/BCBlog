@@ -40,14 +40,14 @@
             </div>
 
                 <div class="col-md-6 order-first order-md-last">
-                    <img src="@(user?.ImageId.HasValue == true ? $"/api/uploads/{user.ImageId}" : ImageHelper.DefaultProfilePicture)" class="img-fluid p-5 pt-0 rounded-3" id="imagePreview" />
+                    <img src="@(user?.ImageId.HasValue == true ? $"/api/uploads/{user.ImageId}" : ImageHelper.DefaultProfilePicture)" class="img-fluid p-3 rounded-5 border border-1" id="imagePreview" />
 
-                    <label class="form-label" for="image">Profile Picture</label>
-                    <input type="file" class="form-control" accept=".jpg,.jpeg,.png,.svg,.gif" name="Input.ProfilePicture"
+                    <label class="form-label mt-2" for="image">Profile Picture</label>
+                    <input type="file" class="form-control mt-1" accept=".jpg,.jpeg,.png,.svg,.gif" name="Input.ProfilePicture"
                            onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])" />
                 </div>
  
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+            <button type="submit" class="w-100 btn btn-lg btn-primary mt-2">Save</button>
         </EditForm>
     </div>
 </div>
@@ -69,7 +69,7 @@
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         username = await UserManager.GetUserNameAsync(user);
         Input.FirstName = string.IsNullOrEmpty(Input.FirstName) ? user.FirstName : Input.FirstName;
-        Input.FirstName = string.IsNullOrEmpty(Input.LastName) ? user.LastName : Input.LastName;
+        Input.LastName = string.IsNullOrEmpty(Input.LastName) ? user.LastName : Input.LastName;
     }
 
     private async Task OnValidSubmitAsync()

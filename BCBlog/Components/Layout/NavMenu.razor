@@ -43,6 +43,7 @@
                         Categories
                     </NavLink>
                     <ul class="dropdown-menu">
+                        @*Sort blog post by categories foreach later*@
                         <li><a class="dropdown-item" href="#">Category 1</a></li>
                         <li><a class="dropdown-item" href="#">Category 2</a></li>
                         <li><a class="dropdown-item" href="#">Category 3</a></li>
@@ -63,7 +64,7 @@
 
                 <AuthorizeView>
                     <Authorized>
-                        <li class="nav-item dropdown text-emd">
+                        <li class="nav-item dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="Account/Manage" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                 @(context.User?.Identity?.Name ?? "Account")
                             </NavLink>
@@ -103,6 +104,8 @@
         NavigationManager.LocationChanged += OnLocationChanged;
     }
 
+// add onitilized for cateogries to list them in ur navbar make pagedlist so that u dont have a ton
+    
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
