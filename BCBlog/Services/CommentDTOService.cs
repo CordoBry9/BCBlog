@@ -12,7 +12,7 @@ namespace BCBlog.Services
 
         public async Task<CommentDTO> CreateCommentAsync(CommentDTO commentDTO)
         {
-            Comment comment = new Comment()
+            Comment? comment = new Comment()
             {
                 Content = commentDTO.Content,
                 Created = DateTimeOffset.Now,
@@ -21,17 +21,20 @@ namespace BCBlog.Services
                 
             };
 
-            //if (commentDTO.AuthorImageUrl?.StartsWith("data:") == true)
-            //{
-            //    try
-            //    {
-            //        comment.Author.Image = UploadHelper.GetImageUpload(commentDTO.AuthorImageUrl);
-            //    }
-            //     catch (Exception ex)
-            //    {
-            //        Console.WriteLine(ex);
-            //    }
-            //}
+         
+                //if (commentDTO.AuthorImageUrl?.StartsWith("data:") == true)
+                //{
+                //    try
+                //    {
+                //        comment.Author.Image = UploadHelper.GetImageUpload(commentDTO.AuthorImageUrl);
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        Console.WriteLine(ex);
+                //    }
+                //}
+        
+           
 
             Comment createdComment = await repository.CreateCommentAsync(comment);
             return createdComment.ToDTO();

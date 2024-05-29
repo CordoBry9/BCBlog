@@ -31,7 +31,7 @@ namespace BCBlog.Models
                 Id = category.Id,
                 Name = category.Name,
                 Description = category.Description,
-                ImageUrl = category.ImageId.HasValue ? $"api/Uploads/{category.ImageId}" : UploadHelper.DefaultProfilePicture,
+                ImageUrl = category.ImageId.HasValue ? $"api/Uploads/{category.ImageId}" : UploadHelper.DefaultCategoryPicture,
 
             };
 

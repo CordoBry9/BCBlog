@@ -71,7 +71,7 @@ namespace BCBlog.Models
                 Updated = blogpost.Updated,
                 IsPublished = blogpost.IsPublished,
                 IsDeleted = blogpost.IsDeleted,
-                ImageUrl = blogpost.ImageId.HasValue ? $"api/Uploads/{blogpost.ImageId}" : UploadHelper.DefaultProfilePicture,
+                ImageUrl = blogpost.ImageId.HasValue ? $"api/Uploads/{blogpost.ImageId}" : UploadHelper.DefaultBlogPicture,
                 CategoryId = blogpost.CategoryId,
             };
 
