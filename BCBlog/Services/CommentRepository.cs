@@ -50,7 +50,7 @@ namespace BCBlog.Services
 
             return comments;
 
-        }
+        }   
 
         public async Task<Comment> GetCommentByIdAsync(int commentId)
         {
@@ -69,7 +69,7 @@ namespace BCBlog.Services
 
             if (shouldUpdate)
             {
-                context.Comments.Add(comment);
+                context.Comments.Update(comment);
                 await context.SaveChangesAsync();
             }
         }

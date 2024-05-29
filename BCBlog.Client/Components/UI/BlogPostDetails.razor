@@ -51,8 +51,8 @@
         {
             @foreach (TagDTO tag in BlogPost.Tags)
             {
-                <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
-                    <span class="text-primary">@tag.Name</span>
+                <a class="nav-link fs-sm py-1 px-0 me-3" href="/tag/@tag.Id">
+                    <span class="text-primary">#@tag.Name</span>
                 </a>
             }
         }
@@ -75,7 +75,7 @@
                         <a class="nav-link p-2 me-2" href="https://github.com/CordoBry9" data-bs-toggle="tooltip" target="_blank" data-bs-placement="bottom" title="github" aria-label="github">
                             <i class="ai-github"></i>
                         </a>
-                        <a class="nav-link p-2 me-2" href="mailto:bryancordova.hela@gmail.com" data-bs-toggle="tooltip" data-bs-placement="bottom" title="mail" aria-label="mail">
+                        <a class="nav-link p-2 me-2" href="mailto:bryancordova.hela@gmail.com" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="mail" aria-label="mail">
                             <i class="ai-mail"></i>
                         </a>
                         <a class="nav-link p-2 me-2" href="https://www.linkedin.com/in/bryan-cordova-0677a1125/" data-bs-toggle="tooltip" target="_blank" data-bs-placement="bottom" title="linkedin" aria-label="linkedin">

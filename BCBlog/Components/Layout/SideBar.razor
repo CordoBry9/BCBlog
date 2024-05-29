@@ -13,8 +13,10 @@
 
         <!-- Search box -->
         <div class="position-relative mb-4 mb-lg-5">
-            <i class="ai-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-            <input class="form-control ps-5" type="search" placeholder="Enter keyword">
+            <form action="search" method="get">
+                <i class="ai-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                <input class="form-control ps-5" type="search" placeholder="Enter keyword" name="query" value="@Query">
+            </form>
         </div>
 
         <!-- Popular posts -->
@@ -45,9 +47,9 @@
                         <img class="rounded" src="@post.ImageUrl" width="80px" height="80px" alt="Post image">
                         <div class="ps-3">
                             <h4 class="h6 mb-2">
-                                <a class="stretched-link" href="#">@post.Title</a>
+                                <a class="stretched-link" href="/posts/@post.Slug">@post.Title</a>
                             </h4>
-                            <span class="fs-sm text-body-secondary">@post.Created</span>
+                            <span class="fs-sm text-body-secondary">@post.Created.ToString("yyyy-MM-dd HH:mm")</span>
                         </div>
                     </article>
                 }
@@ -60,6 +62,13 @@
 </div>
 
 @code {
+
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
+
+    // private IEnumerable<CategoryDTO> topCategories = [];
+    // private IEnumerable<BlogPostDTO> topPosts = [];
+
     #region states
     private PagedList<BlogPostDTO>? BlogPosts { get; set; }
     private List<CategoryDTO>? TopCategories { get; set; }

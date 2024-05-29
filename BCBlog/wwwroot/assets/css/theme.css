@@ -3033,7 +3033,7 @@ textarea.form-control-lg {
 }
 
 .btn-primary {
-  --ar-btn-color: #fff;
+  --ar-btn-color: #b347e6;
   --ar-btn-bg: #448c74;
   --ar-btn-border-color: #448c74;
   --ar-btn-hover-color: #fff;
@@ -13938,13 +13938,8 @@ html:not([dir=rtl]) .range-slider-ui.noUi-horizontal .noUi-handle {
 }
 
 .btn-primary {
-  --ar-btn-hover-color: #fff;
-  --ar-btn-active-color: #fff;
-  --ar-btn-hover-bg: #37715d;
-  --ar-btn-active-bg: #37715d;
-  --ar-btn-hover-border-color: #37715d;
-  --ar-btn-active-border-color: #37715d;
-  --ar-btn-disabled-color: #fff;
+    color: #b347e6
+    
 }
 
 .btn-secondary {

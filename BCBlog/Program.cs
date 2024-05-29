@@ -1,4 +1,5 @@
 
+using BCBlog.Client.Models;
 using BCBlog.Client.Services.Interfaces;
 using BCBlog.Components;
 using BCBlog.Components.Account;
@@ -7,6 +8,7 @@ using BCBlog.Services;
 using BCBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,10 +32,12 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = DataUtility.GetConnectionString(builder.Configuration) ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(
+        connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+        ));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -58,7 +62,19 @@ builder.Services.AddScoped<ICommentDTOService, CommentDTOService>();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+builder.Services.AddCors(builder =>
+{
+    builder.AddPolicy("DefaultPolicy", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("DefaultPolicy");
 
 using (var scope = app.Services.CreateScope())
 {
@@ -92,5 +108,22 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.MapControllers();
+
+// GET: api/blogposts
+app.MapGet("api/blogposts", async ([FromServices] IBlogPostDTOService blogService,
+                                   [FromQuery] int page = 1,
+                                   [FromQuery] int pageSize = 4) =>
+{
+    try
+    {
+        PagedList<BlogPostDTO> blogPosts = await blogService.GetPublishedBlogPostsAsync(page, pageSize);
+        return Results.Ok(blogPosts);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex);
+        return Results.Problem();
+    }
+});
 
 app.Run();

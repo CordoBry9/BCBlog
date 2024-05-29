@@ -1,3 +1,29 @@
+/*.button-color {
+    background-color: #9d3cc7;
+    border: 1px solid #9d3cc7;*/ /* Darker shade for border */
+    /*outline: 1px solid #9d3cc7;*/ /* Outline matching border */
+    /*transition: background-color 0.3s, border-color 0.3s, outline-color 0.3s;*/ /* Smooth transition */
+/*}
+
+    .button-color:hover {
+        background-color: #a94bdb;*/ /* Lighter shade on hover */
+        /*border-color: #a94bdb;*/ /* Lighter border on hover */
+        /*outline-color: #a94bdb;*/ /* Matching lighter outline on hover */
+    /*}
+
+    .button-color:active {
+        background-color: #a94bdb;*/ /* Lighter shade on click */
+        /*border-color: #a94bdb;*/ /* Lighter border on click */
+        /*outline-color: #a94bdb;*/ /* Matching lighter outline on click */
+        /*color: #a94bdb;*/ /* Ensure text color remains purple on click */
+    /*}
+
+.button-text-color {
+    color: #a94bdb;
+    transition: color 0.3s;*/ /* Smooth transition */
+/*}*/
+
+
 h1:focus {
     outline: none;
 }

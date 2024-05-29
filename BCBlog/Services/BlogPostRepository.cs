@@ -22,7 +22,7 @@ namespace BCBlog.Services
         {
             _dbContextFactory = dbContextFactory;
         }
-    
+
         public async Task<BlogPost> CreateBlogPostAsync(BlogPost blogPost)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
@@ -30,11 +30,11 @@ namespace BCBlog.Services
             blogPost.Created = DateTimeOffset.Now;
             blogPost.Slug = await GenerateSlugAsync(blogPost.Title!, blogPost.Id);
 
-                context.BlogPosts.Add(blogPost);
-                await context.SaveChangesAsync();
-                return blogPost;
+            context.BlogPosts.Add(blogPost);
+            await context.SaveChangesAsync();
+            return blogPost;
 
-           
+
         }
         public async Task<PagedList<BlogPost>> GetPublishedBlogPostsAsync(int page, int pageSize) //was IENumerable before
         {
@@ -45,6 +45,16 @@ namespace BCBlog.Services
 
             return blogPosts;
 
+        }
+
+        public async Task<PagedList<BlogPost>> GetPostsByCategoryId(int categoryId, int page, int pageSize)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            PagedList<BlogPost> blogPosts = await context.BlogPosts.Where(b => b.IsPublished && !b.IsDeleted && b.CategoryId == categoryId).Include(b => b.Category)
+                .Include(b => b.Tags).Include(b => b.Comments).OrderByDescending(b => b.Created).ToPagedListAsync(page, pageSize);
+
+            return blogPosts;
         }
 
         public async Task<IEnumerable<BlogPost>> GetBlogPostsAsync()
@@ -61,6 +71,53 @@ namespace BCBlog.Services
             return blogPosts;
         }
 
+        public async Task<PagedList<BlogPost>> GetPostsByTagIdAsync(int tagId, int page, int pageSize)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            PagedList<BlogPost> posts = await context.BlogPosts
+                .Where(b => b.IsPublished == true && b.IsDeleted == false)
+                .Include(b => b.Category)
+                .Include(b => b.Tags)
+                .Include(b => b.Comments)
+                .Where(b => b.Tags.Any(t => t.Id == tagId) /* blog post has a tag of this ID*/)
+                .OrderByDescending(b => b.Created).ToPagedListAsync(page, pageSize);
+            return posts;
+        }
+
+        public async Task<Tag?> GetTagByIdAsync(int tagId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            Tag? tag = await context.Tags.FirstOrDefaultAsync(t => t.Id == tagId);
+
+            return tag;
+        }
+        public async Task<PagedList<BlogPost>> SearchBlogPostsAsync(string query, int page, int pageSize)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            string normalizedQuery = query.Trim().ToLower();
+            PagedList<BlogPost> results = await context.BlogPosts
+                .Where(b => b.IsPublished == true && b.IsDeleted == false)
+                .Include(b => b.Category)
+                .Include(b => b.Tags)
+                .Include(b => b.Comments).ThenInclude(c => c.Author)
+                .Where(b => string.IsNullOrWhiteSpace(normalizedQuery)
+                       || b.Title!.ToLower().Contains(normalizedQuery)
+                       || b.Abstract!.ToLower().Contains(normalizedQuery)
+                       || b.Content!.ToLower().Contains(normalizedQuery)
+                       || b.Category!.Name!.ToLower().Contains(normalizedQuery)
+                       || b.Tags.Select(t => t.Name!.ToLower()).Any(tagName => tagName.Contains(normalizedQuery))
+                       || b.Comments.Any(c => c.Content!.ToLower().Contains(normalizedQuery) 
+                                    || c.Author!.FirstName!.ToLower().Contains(normalizedQuery) 
+                                    || c.Author!.LastName!.ToLower().Contains(normalizedQuery))
+
+                )
+                .OrderByDescending(b => b.Created)
+                .ToPagedListAsync(page, pageSize);
+            return results;
+        }
 
         public async Task PublishBlogPostAsync(int blogPostId)
         {
@@ -285,6 +342,9 @@ namespace BCBlog.Services
 
             return slug;
         }
+
+
+
 
         #region tags
 

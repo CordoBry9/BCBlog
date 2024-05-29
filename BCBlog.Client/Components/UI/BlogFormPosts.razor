@@ -29,7 +29,14 @@
                 </InputSelect>
                 <ValidationMessage For="() => Post.CategoryId"></ValidationMessage>
             </div>
-
+            <div class="mb-2">
+                <label class="form-label" for="postImage">Blogpost Image</label>
+                <div>
+                    <InputFile OnChange="OnFileChange" id="postImage" class="form-control" accept=".png, .jpg, .jpeg, .svg" />
+                    <img src="@(string.IsNullOrEmpty(Post.ImageUrl) ? ImageHelper.DefaultProfilePicture : Post.ImageUrl)" class="rounded mt-2" style="width: 100%; height: auto;" />
+                    <span class="text-danger">@imageError</span>
+                </div>
+            </div>
         </div>
         <div class="col-lg-8 d-flex flex-column">
             <div class="mb-2 flex-fill vstack">

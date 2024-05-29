@@ -28,7 +28,7 @@
     <hr />
     @foreach (CommentDTO comment in BlogPostComments)
     {
-        <CommentsList @rendermode="InteractiveServer" Comment="comment" userInfo="userInfo" DeleteTheComment="HandleDelete" UpdateTheComment="HandleUpdate"/>
+        <CommentsList @rendermode="InteractiveWebAssembly" Comment="comment" userInfo="userInfo" DeleteTheComment="HandleDelete" UpdateTheComment="HandleUpdate"/>
     }
 
 }

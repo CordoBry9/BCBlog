@@ -25,14 +25,14 @@ else
         <Authorized>
             <section class="container pt-xl-2 pb-5 mb-md-2 mb-lg-4 mb-xl-5" id="comments">
                 <div>
-                    <CommentForm @rendermode="InteractiveServer" BlogPost="blogPost"></CommentForm>
+                    <CommentForm @rendermode="InteractiveAuto" BlogPost="blogPost"></CommentForm>
                 </div>
             </section>
         </Authorized>
         <NotAuthorized>
               <section class="container pt-xl-2 pb-5 mb-md-2 mb-lg-4 mb-xl-5" id="comments">
                 <div>
-            <GuestCommentList @rendermode="InteractiveServer" BlogPost="blogPost"></GuestCommentList>
+                    <GuestCommentList BlogPost="blogPost"></GuestCommentList>
                 </div>
             </section>
         </NotAuthorized>

@@ -8,9 +8,9 @@
     <div class="offcanvas-body">
         <!-- Search box -->
         <div class="position-relative mb-4 mb-lg-5">
-            <form>
+            <form action="search" method="get">
                 <i class="ai-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                <input class="form-control ps-5" type="search" placeholder="Enter keyword">
+                <input class="form-control ps-5" type="search" placeholder="Enter keyword" name="query" value="@Query">
             </form>
         </div>
 
@@ -49,6 +49,12 @@
 
 
 @code {
+
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
+
+    private IEnumerable<CategoryDTO> topCategories = [];
+    private IEnumerable<BlogPostDTO> topPosts = [];
     [Parameter]
     public List<CategoryDTO> TopCategories { get; set; } = new List<CategoryDTO>();
 

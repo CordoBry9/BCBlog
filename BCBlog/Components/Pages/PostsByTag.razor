@@ -1,0 +1,88 @@
+﻿@page "/tag/{tagId:int}"
+
+@inject IBlogPostDTOService BlogPostService
+@using BCBlog.Components.Layout
+@layout SidebarLayout
+@using BCBlog.Client.Models
+@using BCBlog.Client.Services.Interfaces
+@using BCBlog.Models
+@using BCBlog.Services.Interfaces
+@using BCBlog.Client.Components.UI
+@inject NavigationManager Nav
+
+@if (tag != null)
+{
+
+    <PageTitle> BCBlog | Tag: @tag.Name </PageTitle>
+
+    <div class="container pb-lg-5 pb-md-4 pt-2">
+        <div class="row mb-md-2 mb-xl-4">
+            <!-- Blog posts -->
+            <div class="col pe-lg-4">
+                <h1 class="pb-3 pb-lg-4">Tag: @tag.Name</h1>
+
+                <!-- Post -->
+                @if (BlogPosts is not null)
+                {
+                    @foreach (BlogPostDTO post in BlogPosts.Data)
+                    {
+                        @if (post.IsPublished)
+                        {
+                            <BlogPostsList BlogPost="post"></BlogPostsList>
+                        }
+                    }
+                }
+
+            </div>
+            <div class="row gy-3 align-items-center mt-lg-5 pt-2 pt-md-4 pt-lg-0 hstack">
+                <div class="col text-center">
+                    @if (Page > 1)
+                    {
+                        <a href="@Nav.GetUriWithQueryParameter(nameof(Page), Page - 1)"><i class="ai-arrow-left fs-2"></i></a>
+                    }
+                </div>
+                <div class="col col-md-4 col-4 text-center">
+                    <div class="btn btn-primary w-md-auto w-100">Page @BlogPosts!.Page of @BlogPosts.TotalPages</div>
+                </div>
+                <div class="col col-md-4 col-6 text-center">
+                    @if (Page < BlogPosts.TotalPages)
+                    {
+                        <a href="@Nav.GetUriWithQueryParameter(nameof(Page), Page + 1)"><i class="ai-arrow-right fs-2"></i></a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int TagId { get; set; }
+
+    #region states
+    [SupplyParameterFromQuery]
+    public int Page { get; set; }
+
+    private int pageSize = 4;
+    private PagedList<BlogPostDTO>? BlogPosts = new PagedList<BlogPostDTO>();
+    private TagDTO? tag;
+    #endregion
+
+    #region methods
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (Page < 1) Page = 1;
+
+       tag = await BlogPostService.GetTagByIdAsync(TagId);
+
+        if (tag is null)
+        {
+            Nav.NavigateTo("/");
+        }
+
+        BlogPosts = await BlogPostService.GetPostsByTagIdAsync(TagId, Page, pageSize);
+
+    }
+    #endregion
+}
