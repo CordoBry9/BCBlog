@@ -1,4 +1,5 @@
 
+using AddressAce.Services;
 using BCBlog.Client.Models;
 using BCBlog.Client.Services.Interfaces;
 using BCBlog.Components;
@@ -8,6 +9,7 @@ using BCBlog.Services;
 using BCBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +50,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, SendGridService>();
+builder.Services.AddSingleton<IEmailSender, SendGridService>();
+
 // Registered repositories
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
@@ -58,9 +63,6 @@ builder.Services.AddScoped<IBlogPostDTOService, BlogPostDTOService>();
 
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ICommentDTOService, CommentDTOService>();
-
-
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 builder.Services.AddCors(builder =>
 {
