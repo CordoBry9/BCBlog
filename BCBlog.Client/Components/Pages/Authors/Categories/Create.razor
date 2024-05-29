@@ -24,7 +24,7 @@
                             <label class="form-label" for="categoryImage">Category Image</label>
                             <div>
                                 <InputFile OnChange="OnFileChange" id="categoryImage" class="form-control" accept=".png, .jpg, .jpeg, .svg" />
-                                <img src="@(string.IsNullOrEmpty(newCategory.ImageUrl) ? ImageHelper.DefaultProfilePicture : newCategory.ImageUrl)" class="rounded mt-2" style="width: 100%; height: auto;" />
+                                <img src="@(string.IsNullOrEmpty(newCategory.ImageUrl) ? ImageHelper.DefaultCategoryPicture : newCategory.ImageUrl)" class="rounded mt-2" style="width: 100%; height: auto;" />
                                 <span class="text-danger">@imageError</span>
                             </div>
                         </div>

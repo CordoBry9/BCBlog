@@ -33,7 +33,7 @@
                 <label class="form-label" for="postImage">Blogpost Image</label>
                 <div>
                     <InputFile OnChange="OnFileChange" id="postImage" class="form-control" accept=".png, .jpg, .jpeg, .svg" />
-                    <img src="@(string.IsNullOrEmpty(Post.ImageUrl) ? ImageHelper.DefaultProfilePicture : Post.ImageUrl)" class="rounded mt-2" style="width: 100%; height: auto;" />
+                    <img src="@(string.IsNullOrEmpty(Post.ImageUrl) ? ImageHelper.DefaultBlogPicture : Post.ImageUrl)" class="rounded mt-2" style="width: 100%; height: auto;" />
                     <span class="text-danger">@imageError</span>
                 </div>
             </div>

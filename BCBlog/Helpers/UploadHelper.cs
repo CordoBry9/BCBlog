@@ -7,6 +7,8 @@ namespace BCBlog.Helpers
     public static class UploadHelper
     {
         public static readonly string DefaultProfilePicture = ImageHelper.DefaultProfilePicture;
+        public static readonly string DefaultBlogPicture = ImageHelper.DefaultBlogPicture;
+        public static readonly string DefaultCategoryPicture = ImageHelper.DefaultCategoryPicture;
         public static readonly int MaxFileSize = ImageHelper.MaxFileSize;
 
         public static async Task<ImageUpload> GetImageUploadAsync(IFormFile file)
