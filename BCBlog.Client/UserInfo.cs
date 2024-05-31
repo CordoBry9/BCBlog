@@ -12,7 +12,6 @@ namespace BCBlog.Client
         public string FullName => $"{FirstName} {LastName}";
         public required string[] Roles { get; set; }
 
-
     }
 }
 
