@@ -23,6 +23,9 @@
     transition: color 0.3s;*/ /* Smooth transition */
 /*}*/
 
+.arrowcolor {
+    color: #8a4fcc !important
+}
 
 h1:focus {
     outline: none;
