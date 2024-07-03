@@ -7,7 +7,7 @@
 <EditForm Model="newComment" OnValidSubmit="HandleSubmit" class="row">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div class="col-12 d-flex flex-column">
-        <div class="mb-2 flex-fill vstack">
+        <div class="mb-1 flex-fill vstack">
             <label class="form-label mt-2"><h4>Write a Comment:</h4></label>
             <TinyMCE.Blazor.Editor ScriptSrc="/tinymce/tinymce.min.js" @bind-Value="newComment!.Content"
                                    Field="() => newComment!.Content"
@@ -24,7 +24,7 @@
 
 @if (BlogPostComments != null)
 {
-    <h4 class="mt-4">Comments:</h4>
+    <h4 class="mt-2">Comments:</h4>
     <hr />
     @foreach (CommentDTO comment in BlogPostComments)
     {
