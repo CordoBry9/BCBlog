@@ -39,26 +39,32 @@
                 </li>
                 <AuthorizeView>
 
-                <li class="nav-item dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="categories" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        Categories
-                    </NavLink>
-                    <ul class="dropdown-menu">
-                        @*Sort blog post by categories foreach later*@
-                        @if(categories != null)
-                        {
-                            @foreach (CategoryDTO category in categories)
+                    <li class="nav-item dropdown">
+                        <NavLink class="nav-link dropdown-toggle" href="categories" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                            Categories
+                        </NavLink>
+                        <ul class="dropdown-menu custom-scrollable-menu">
+                            @*Sort blog post by categories foreach later*@
+                            @if (categories != null)
                             {
-                                <li>
-                                    <a class="dropdown-item" href="category/@category.Id">
-                                        @category.Name
-                                    </a>
-                                </li>
+                                @foreach (CategoryDTO category in categories)
+                                {
+                                    <li>
+                                        <a class="dropdown-item" href="category/@category.Id">
+                                            @category.Name
+                                        </a>
+                                    </li>
+                                }
                             }
-                        }
+                        </ul>
+                    </li>
 
-                    </ul>
-                </li>
+                    <style>
+                        .custom-scrollable-menu {
+                            max-height: 125px; /* Adjust the height as needed */
+                            overflow-y: auto;
+                        }
+                    </style>
                 </AuthorizeView>
                 <AuthorizeView Roles="Author">
                     <li class="nav-item dropdown">

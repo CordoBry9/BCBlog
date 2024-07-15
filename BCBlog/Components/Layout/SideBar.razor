@@ -27,7 +27,7 @@
                 @foreach (CategoryDTO category in TopCategories)
                 {
                     <li class="mb-2">
-                        <a class="nav-link d-flex p-0" href="#">
+                        <a class="nav-link d-flex p-0" href="category/@category.Id">
                             @category.Name
                             <span class="fs-sm text-body-secondary ms-2">(@category.BlogPosts.Count)</span>
                         </a>
