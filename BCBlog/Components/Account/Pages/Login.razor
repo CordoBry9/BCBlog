@@ -12,57 +12,47 @@
 
 <PageTitle>Log in</PageTitle>
 
-<h1>Log in</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <StatusMessage Message="@errorMessage" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                <DataAnnotationsValidator />
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="email" class="form-label">Email</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Password</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
-                </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Remember me
+<!-- Page content -->
+    <!-- Sign in form -->
+    <div class="container-fluid d-flex flex-wrap justify-content-center justify-content-xl-start h-100 pt-5">
+        <div class="w-100 align-self-end pt-1 pt-md-4 pb-4" style="max-width: 526px;">
+            <h1 class="text-center text-xl-start">Welcome Back</h1>
+        <p class="text-center text-xl-start pb-3 mb-3">Don’t have an account yet? <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a></p>
+        <EditForm Model="Input" OnValidSubmit="LoginUser" class="needs-validation mb-2" novalidate FormName="login">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="position-relative mb-4">
+                <label for="email" class="form-label fs-base">Email</label>
+                <InputText id="email" @bind-Value="Input.Email" class="form-control form-control-lg" required />
+                <ValidationMessage For="() => Input.Email" class="invalid-feedback position-absolute start-0 top-100" />
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label fs-base">Password</label>
+                <div class="password-toggle">
+                    <InputText type="password" id="password" @bind-Value="Input.Password" class="form-control form-control-lg" required />
+                    <label class="password-toggle-btn" aria-label="Show/hide password">
+                        <input class="password-toggle-check" type="checkbox">
+                        <span class="password-toggle-indicator"></span>
                     </label>
+                    <ValidationMessage For="() => Input.Password" class="invalid-feedback position-absolute start-0 top-100" />
                 </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+            </div>
+            <div class="mb-4">
+                <div class="form-check">
+                    <InputCheckbox id="remember" @bind-Value="Input.RememberMe" class="form-check-input" />
+                    <label for="remember" class="form-check-label fs-base">Remember me</label>
                 </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </EditForm>
-        </section>
+            </div>
+            <button type="submit" class="btn btn-primary shadow-primary btn-lg w-100">Sign in</button>
+        </EditForm>
+
+            <a href="Account/ForgotPassword" class="btn btn-link btn-lg w-100">Forgot your password?</a>
+        </div>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
-    </div>
-</div>
+
+    <!-- Background -->
+    <div class="position-absolute top-0 end-0 w-50 h-100 bg-position-center bg-repeat-0 bg-size-cover d-none d-xl-block" style="background-image: url('/img/backgroundlogin.jpg');"></div>
+
 
 @code {
     private string? errorMessage;

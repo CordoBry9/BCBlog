@@ -22,62 +22,72 @@
 
 <PageTitle>Register</PageTitle>
 
-<h1>Register</h1>
+<!-- Page content -->
 
-<div class="row">
-    <div class="col-md-4">
-        <StatusMessage Message="@Message" />
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register" enctype="multipart/form-data">
-            <DataAnnotationsValidator />
-            <h2>Create a new account.</h2>
-            <hr />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label for="email">Email</label>
-                <ValidationMessage For="() => Input.Email" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="first-name" @bind-Value="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" placeholder="first name" />
-                <label for="first-name">First Name</label>
-                <ValidationMessage For="() => Input.FirstName" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="last-name" @bind-Value="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" placeholder="last name" />
-                <label for="last-name">Last Name</label>
-                <ValidationMessage For="() => Input.LastName" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="password">Password</label>
-                <ValidationMessage For="() => Input.Password" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="confirm-password">Confirm Password</label>
-                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
-            </div>
-            <div class="mb-3 row">
-                <div class="col-md-4 text-center overflow-hidden">
-                    <img src="@ImageHelper.DefaultProfilePicture" class="img-fluid" id="imagePreview" height="80" />
+    <!-- Sign in form -->
+    <div class="container-fluid d-flex flex-wrap justify-content-center justify-content-xl-start h-100 pt-5">
+        <div class="w-100 align-self-end pt-1 pb-2" style="max-width: 526px;">
+            <h1 class="text-center text-xl-start">Create a New Account</h1>
+            <p class="text-center text-xl-start pb-1 mb-3">Already have an account? <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Log in here</a></p>
+            <EditForm Model="Input" OnValidSubmit="RegisterUser" class="needs-validation mb-2" novalidate FormName="register" enctype="multipart/form-data">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+                <div class="position-relative mb-4">
+                    <label for="email" class="form-label fs-base">Email</label>
+                    <InputText id="email" @bind-Value="Input.Email" class="form-control form-control-lg" required />
+                    <ValidationMessage For="() => Input.Email" class="invalid-feedback position-absolute start-0 top-100" />
                 </div>
-                <div class="col-md-8">
-                    <label class="form-label" for="image">Profile Picture</label>
-                    <input type="file" class="form-control" accept=".jpg,.jpeg,.png,.svg,.gif" name="Input.ProfilePicture"
-                        onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])"/> 
+                <div class="position-relative mb-4">
+                    <label for="first-name" class="form-label fs-base">First Name</label>
+                    <InputText id="first-name" @bind-Value="Input.FirstName" class="form-control form-control-lg" required />
+                    <ValidationMessage For="() => Input.FirstName" class="invalid-feedback position-absolute start-0 top-100" />
                 </div>
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </EditForm>
+                <div class="position-relative mb-4">
+                    <label for="last-name" class="form-label fs-base">Last Name</label>
+                    <InputText id="last-name" @bind-Value="Input.LastName" class="form-control form-control-lg" required />
+                    <ValidationMessage For="() => Input.LastName" class="invalid-feedback position-absolute start-0 top-100" />
+                </div>
+                <div class="position-relative mb-4">
+                    <label for="password" class="form-label fs-base">Password</label>
+                    <div class="password-toggle">
+                        <InputText type="password" id="password" @bind-Value="Input.Password" class="form-control form-control-lg" required />
+                        <label class="password-toggle-btn" aria-label="Show/hide password">
+                            <input class="password-toggle-check" type="checkbox">
+                            <span class="password-toggle-indicator"></span>
+                        </label>
+                        <ValidationMessage For="() => Input.Password" class="invalid-feedback position-absolute start-0 top-100" />
+                    </div>
+                </div>
+                <div class="position-relative mb-4">
+                    <label for="confirm-password" class="form-label fs-base">Confirm Password</label>
+                    <div class="password-toggle">
+                        <InputText type="password" id="confirm-password" @bind-Value="Input.ConfirmPassword" class="form-control form-control-lg" required />
+                        <label class="password-toggle-btn" aria-label="Show/hide password">
+                            <input class="password-toggle-check" type="checkbox">
+                            <span class="password-toggle-indicator"></span>
+                        </label>
+                        <ValidationMessage For="() => Input.ConfirmPassword" class="invalid-feedback position-absolute start-0 top-100" />
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="row">
+                        <div class="col-md-3 text-center overflow-hidden">
+                            <img src="@ImageHelper.DefaultProfilePicture" class="rounded" id="imagePreview" height="50" />
+                        </div>
+                        <div class="col-md-9">
+                            <label class="form-label" for="image">Profile Picture</label>
+                            <input type="file" class="form-control" accept=".jpg,.jpeg,.png,.svg,.gif" name="Input.ProfilePicture"
+                                   onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])" />
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary shadow-primary btn-lg w-100">Register</button>
+            </EditForm>
+        </div>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
-    </div>
-</div>
+
+    <!-- Background -->
+    <div class="position-absolute top-0 end-0 w-50 h-100 bg-position-center bg-repeat-0 bg-size-cover d-none d-xl-block" style="background-image: url('/img/backgroundlogin.jpg');"></div>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;

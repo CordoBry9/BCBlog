@@ -37,6 +37,7 @@
                 <li class="nav-item">
                     <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Home</NavLink>
                 </li>
+                <AuthorizeView>
 
                 <li class="nav-item dropdown">
                     <NavLink class="nav-link dropdown-toggle" href="categories" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
@@ -58,6 +59,7 @@
 
                     </ul>
                 </li>
+                </AuthorizeView>
                 <AuthorizeView Roles="Author">
                     <li class="nav-item dropdown">
                         <NavLink class="nav-link dropdown-toggle" href="author" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
