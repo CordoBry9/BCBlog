@@ -11,26 +11,29 @@ public static class DataUtility
     public static string GetConnectionString(IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");  // Local Connection string
-        var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_PRIVATE_URL");  // Remote connection string
+        var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");  // Railway connection string
 
         return string.IsNullOrEmpty(databaseUrl) ? connectionString! : BuildConnectionString(databaseUrl);
     }
 
     private static string BuildConnectionString(string databaseUrl)
     {
-        //Provides an object representation of a uniform resource identifier (URI) and easy access to the parts of the URI.
         var databaseUri = new Uri(databaseUrl);
         var userInfo = databaseUri.UserInfo.Split(':');
-        //Provides a simple way to create and manage the contents of connection strings used by the NpgsqlConnection class.
+
+        var database = Environment.GetEnvironmentVariable("RAILWAY_SERVICE_NAME")
+            ?? typeof(DataUtility).Assembly.GetName().Name;
+
         var builder = new NpgsqlConnectionStringBuilder
         {
             Host = databaseUri.Host,
             Port = databaseUri.Port,
             Username = userInfo[0],
             Password = userInfo[1],
-            Database = databaseUri.LocalPath.TrimStart('/'),
+            Database = database,
             SslMode = SslMode.Prefer
         };
+
         return builder.ToString();
     }
 
